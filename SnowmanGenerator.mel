@@ -1,0 +1,30 @@
+//creates the first sphere
+polySphere -radius 3 -subdivisionsX 20 -subdivisionsY 20 -axis 0 1 0 -createUVs 2 -constructionHistory 1;
+move -relative -objectSpace -worldSpaceDistance 0 3 0;
+//creates the second sphere
+polySphere -radius 1 -subdivisionsX 20 -subdivisionsY 20 -axis 0 1 0 -createUVs 2 -constructionHistory 1;
+polySphere -edit -radius 2;
+move -relative -objectSpace -worldSpaceDistance 0 7 0;
+//creates the third sphere
+polySphere -radius 1 -subdivisionsX 20 -subdivisionsY 20 -axis 0 1 0 -createUVs 2 -constructionHistory 1;
+polySphere -edit -radius 1.4;
+move -relative -objectSpace -worldSpaceDistance 0 9.5 0; 
+//nose
+polyCone -radius 0.5 -height 2 -subdivisionsX 20 -subdivisionsY 1 -axis 0 1 0 -roundCap 0 -createUVs 3 -constructionHistory 1;
+move -relative -objectSpace -worldSpaceDistance 0 9.949 1.987;
+rotate -relative -objectSpace -forceOrderXYZ 76.743461 0 0;
+//left arm
+polyCylinder -radius 1 -height 2 -subdivisionsX 20 -subdivisionsY 1 -subdivisionsZ 1 -axis 0 1 0 -createUVs 3 -constructionHistory 1;
+scale -relative 0.147 1.906 0.147;
+move -relative -objectSpace -worldSpaceDistance 3.703 8.089 0;
+rotate -relative -objectSpace -forceOrderXYZ 0 0 -74.675531;
+//right arm
+polyCylinder -radius 1 -height 2 -subdivisionsX 20 -subdivisionsY 1 -subdivisionsZ 1 -axis 0 1 0 -createUVs 3 -constructionHistory 1;
+scale -relative 0.147 1.906 0.147;
+move -relative -objectSpace -worldSpaceDistance -3.703 8.089 0;
+rotate -relative -objectSpace -forceOrderXYZ 0 0 74.675531;
+//left eye IN PROGRESS
+polySphere -radius 1 -subdivisionsX 20 -subdivisionsY 20 -axis 0 1 0 -createUVs 2 -constructionHistory 1;
+move -relative -objectSpace -worldSpaceDistance 0.565 10.148 1.06;
+scale -relative 0.179 0.179 0.061
+rotate -relative -objectSpace -forceOrderXYZ -34.689 27.293 0;
