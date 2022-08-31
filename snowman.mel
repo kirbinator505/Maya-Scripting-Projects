@@ -1,0 +1,46 @@
+//first sphere
+polySphere -radius 2 -subdivisionsX 20 -subdivisionsY 20 -axis 0 1 0 -createUVs 2 -constructionHistory 1;
+move -relative -objectSpace -worldSpaceDistance 0 2 0;
+//second sphere
+polySphere -radius 1.5 -subdivisionsX 20 -subdivisionsY 20 -axis 0 1 0 -createUVs 2 -constructionHistory 1;
+move -relative -objectSpace -worldSpaceDistance 0 4.5 0;
+//third sphere
+polySphere -radius 1.1 -subdivisionsX 20 -subdivisionsY 20 -axis 0 1 0 -createUVs 2 -constructionHistory 1;
+move -relative -objectSpace -worldSpaceDistance 0 6.5 0;
+//nose
+polyCone -radius 0.3 -height 1 -subdivisionsX 20 -subdivisionsY 1 -axis 0 1 0 -roundCap 0 -createUVs 3 -constructionHistory 1;
+move -relative -objectSpace -worldSpaceDistance 0 6.875 1.027;
+rotate -relative -objectSpace -forceOrderXYZ 70 0 0;
+//left arm
+polyCylinder -radius 0.15 -height 3 -subdivisionsX 20 -subdivisionsY 1 -subdivisionsZ 1 -axis 0 1 0 -roundCap 0 -createUVs 3 -constructionHistory 1;
+move -relative -objectSpace -worldSpaceDistance 2 5.5 0;
+rotate -relative -objectSpace -forceOrderXYZ 0 0 -65;
+//left arm
+polyCylinder -radius 0.15 -height 3 -subdivisionsX 20 -subdivisionsY 1 -subdivisionsZ 1 -axis 0 1 0 -roundCap 0 -createUVs 3 -constructionHistory 1;
+move -relative -objectSpace -worldSpaceDistance -2 5.5 0;
+rotate -relative -objectSpace -forceOrderXYZ 0 0 65;
+//left eye
+polySphere -radius 0.2 -subdivisionsX 20 -subdivisionsY 20 -axis 0 1 0 -createUVs 2 -constructionHistory 1;
+move -relative -objectSpace -worldSpaceDistance 0.486 7.163 0.647;
+rotate -relative -objectSpace -forceOrderXYZ -33.217 35.546 0;
+scale -relative 1 1 0.5;
+//right eye
+polySphere -radius 0.2 -subdivisionsX 20 -subdivisionsY 20 -axis 0 1 0 -createUVs 2 -constructionHistory 1;
+move -relative -objectSpace -worldSpaceDistance -0.486 7.163 0.647;
+rotate -relative -objectSpace -forceOrderXYZ -33.217 -35.546 0;
+scale -relative 1 1 0.5;
+//top button
+polySphere -radius 0.2 -subdivisionsX 20 -subdivisionsY 20 -axis 0 1 0 -createUVs 2 -constructionHistory 1;
+move -relative -objectSpace -worldSpaceDistance 0 5.247 1.249;
+rotate -relative -objectSpace -forceOrderXYZ -26.85 0 0;
+scale -relative 1 1 0.5;
+//mid button
+polySphere -radius 0.2 -subdivisionsX 20 -subdivisionsY 20 -axis 0 1 0 -createUVs 2 -constructionHistory 1;
+move -relative -objectSpace -worldSpaceDistance 0 4.879 1.42;
+rotate -relative -objectSpace -forceOrderXYZ -12.383 0 0;
+scale -relative 1 1 0.5;
+//bottom button
+polySphere -radius 0.2 -subdivisionsX 20 -subdivisionsY 20 -axis 0 1 0 -createUVs 2 -constructionHistory 1;
+move -relative -objectSpace -worldSpaceDistance 0 4.491 1.454;
+rotate -relative -objectSpace -forceOrderXYZ 0 0 0;
+scale -relative 1 1 0.5;
