@@ -1,0 +1,23 @@
+float $Size = 3;
+int $count = 3;//also don't change this one
+float $dist;
+int $offset = 0;//don't change this or it breaks
+
+for($x = $count; $x > 0; $x--)
+ {
+    polySphere -radius ($Size - ($count - $x)) -subdivisionsX 20 -subdivisionsY 20 -axis 0 1 0 -createUVs 2 -constructionHistory 1;
+
+    if($x==$count)
+    {
+        $dist = $Size;
+    }
+    else
+    {
+    $dist = /*gets the bottom to 0*/($Size - ($count - $x)) + /*moves them upward based on for runs*/(($Size *1.666666666666667) * ($count - $x));
+    $dist = $dist - 0.5 * pow($offset,$offset); /*shifts them back down*/
+    }
+    
+    move -relative -objectSpace -worldSpaceDistance 0 $dist 0;
+
+    $offset++;
+ }
