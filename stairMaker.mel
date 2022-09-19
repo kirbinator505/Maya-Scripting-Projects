@@ -1,0 +1,18 @@
+proc MakeStair(int $sNum, float $sDepth, float $sWidth, float $sHeight, float $sOffset, float $stepHeight, float $sRot)
+{
+    int $sCount = 1; //no touch
+    string $sPivotCountCommand = "pCube" + $sCount + ".rotatePivot";
+
+    for($i = 0; $i < $sNum; $i++)
+        {
+            polyCube -w $sDepth -h $sHeight -d $sWidth -sx 1 -sy 1 -sz 1 -ax 0 1 0 -cuv 4 -ch 1;
+            move -r -os -wd 0 0 $sOffset;
+            move -r 0 0 (-$sOffset) $sPivotCountCommand;
+            move -r -os -wd 0 ($stepHeight * $i) 0 ;
+            rotate -r -os -fo 0 ($sRot * $i) 0 ;
+            $sCount++;
+            $sPivotCountCommand = "pCube" + $sCount + ".rotatePivot";
+        }
+}
+
+MakeStair(7, 1, 3, 0.2, 2, 1, 30); //first value must be int, all others can be float
