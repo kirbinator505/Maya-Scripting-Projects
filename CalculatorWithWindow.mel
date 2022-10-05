@@ -1,0 +1,217 @@
+global proc float Addition(float $list[])
+{
+    float $sum = 0;
+    for($i = 0; $i < size($list); $i++)
+    {
+        print($list[$i]);
+        $sum += $list[$i];
+        if($i < (size($list) -1))
+        {
+            print(" + ");
+        }
+        else
+        {
+            print(" = ");
+        }
+    }
+    
+    return $sum;
+}
+
+global proc float Subtraction(float $list[])
+{
+    float $sum = $list[0];
+    for($i = 0; $i < size($list); $i++)
+    {
+        print($list[$i]);
+        $sum -= $list[$i +1];
+        if($i < (size($list) -1))
+        {
+            print(" - ");
+        }
+        else
+        {
+            print(" = ");
+        }
+    }
+    return $sum;
+}
+
+global proc float Multiplication(float $list[])
+{
+    float $sum = 1;
+    for($i = 0; $i < size($list); $i++)
+    {
+        print($list[$i]);
+        $sum *= $list[$i];
+        if($i < (size($list) -1))
+        {
+            print(" * ");
+        }
+        else
+        {
+            print(" = ");
+        }
+    }
+    return $sum;
+}
+
+global proc float Division(float $list[])
+{
+    float $sum = $list[0];
+    for($i = 0; $i < size($list); $i++)
+    {
+        if($list[$i +1] == 0)
+        {
+            print(" / " + $list[$i] + " = ");
+            return $sum;
+        }
+        else
+        {
+            print($list[$i]);
+            $sum /= $list[$i + 1];
+            if($i < (size($list) -2))
+            {
+                print(" / ");
+            }
+        }
+    }
+}
+
+global proc float Exponent(float $list[])
+{
+    float $sum;
+
+    $sum = pow($list[0], $list[1]);
+    print($list[0] + " ^ " + $list[1] + " = ");
+
+    return $sum;
+}
+
+global proc float Mean(float $list[])
+{
+    float $sum = 0;
+    for($i = 0; $i < size($list); $i++)
+    {
+        $sum += $list[$i];
+    }
+
+    $sum /= size($list);
+
+    print("The mean is ");
+
+    return $sum;
+}
+
+global proc float Median(float $list[])
+{
+    int $index;
+    float $evenMed;
+    $list = `sort $list`;
+    if(size($list) % 2 == 1)
+    {
+        $index = ((size($list)/2) + 0.5);
+        print("The median is ");
+        return ($list[$index]);
+    }
+    else
+    {
+        float $val1 = ($list[((size($list)) / 2) -1]);
+        float $val2 = ($list[((size($list) / 2))]);
+        $evenMed = (($val1 + $val2)/2);
+        print("The median is ");
+        return ($evenMed);
+    }
+}
+
+global proc Calculator(float $list[], int $operation)
+{
+    if($operation == 1)
+    {
+        print(Addition($list) + "\n");
+    }
+    else if($operation == 2)
+    {
+        print(Subtraction($list) + "\n");
+    }
+    else if($operation == 3)
+    {
+        print(Multiplication($list) + "\n");
+    }
+    else if($operation == 4)
+    {
+        print(Division($list) + "\n");
+    }
+    else if($operation == 5)
+    {
+        print(Exponent($list) + "\n");
+    }
+    else if($operation == 6)
+    {
+        print(Mean($list) + "\n");
+    }
+    else if($operation == 7)
+    {
+        print(Median($list) + "\n");
+    }
+    else
+    {
+        print("please select a valid operation");
+    }
+}
+
+global proc GenerateCalcWindow()
+{
+    string $CalcWindow = "Calculator_Window";
+
+    if(`window -exists $CalcWindow`)
+    {
+        deleteUI $CalcWindow;
+    }
+
+    $CalcWindow = `window -height 300 -title "Calculator" -sizeable 1 -width 400 $CalcWindow`;
+
+    string $organizeLayout = `columnLayout -adjustableColumn 1 -parent $CalcWindow`;
+
+    string $ValueLayout = `columnLayout -adjustableColumn 1 -parent $organizeLayout`;
+    string $OperationLayout = `flowLayout -wrap 1 -parent $organizeLayout`;
+
+    optionVar -stringValue "Values" `textField -parent $ValueLayout -placeholderText "enter values separated by a comma and a space"`;
+    button -parent $OperationLayout -label "Addition" -command "Calculator(TransferToString(), 1)";
+    button -parent $OperationLayout -label "Subtraction" -command "Calculator(TransferToString(), 2)";
+    button -parent $OperationLayout -label "Multiplication" -command "Calculator(TransferToString(), 3)";
+    button -parent $OperationLayout -label "Division" -command "Calculator(TransferToString(), 4)";
+    button -parent $OperationLayout -label "Exponent" -command "Calculator(TransferToString(), 5)";
+    button -parent $OperationLayout -label "Mean" -command "Calculator(TransferToString(), 6)";
+    button -parent $OperationLayout -label "Median" -command "Calculator(TransferToString(), 7)";
+
+    showWindow $CalcWindow;
+}
+
+global proc float[] TransferToString()
+{
+    string $valuefield = `optionVar -q "Values"`;
+    string $values = `textField -q -text $valuefield`;
+
+    return StringtoFloat($values);
+}
+
+global proc float[] StringtoFloat(string $toSplit)
+{
+    string $stringArray[];
+    float $floatArray[];
+
+    $stringArray = stringToStringArray($toSplit, ", ");
+
+    for($i = 0; $i < size($stringArray); $i++)
+    {
+        $floatArray[$i] = (float)$stringArray[$i];
+    }
+    return $floatArray;
+}
+
+//print(StringtoFloat("1.1, 3.7, 5.0, 3.1, 18.8"));
+
+//Calculator({10, 5, 6}, 1);
+
+GenerateCalcWindow();
