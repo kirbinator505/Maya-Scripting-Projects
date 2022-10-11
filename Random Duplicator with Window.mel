@@ -1,0 +1,92 @@
+global proc Generate(int $runAmount)
+{
+    string $objects[];
+    string $objName[];
+    global float $xMax, $xMin, $xVal, $yMax, $yMin, $yVal, $zMax, $zMin, $zVal;
+
+    $objects = `ls -selection`;
+    for($i = 0; $i < $runAmount; $i++)
+    {
+        for($i = 0; $i < size($objects); $i++)
+        {
+            $xVal = `rand $xMin $xMax`;
+            $yVal = `rand $yMin $yMax`;
+            $zVal = `rand $zMin $zMax`;
+
+            $objName = `duplicate $objects[$i]`;
+            move $xVal $yVal $zVal $objName[0];
+        }
+    }
+}
+
+global proc GenerateWindow()
+{
+    string $DupeWindow = "Duplication_Window";
+    if(`window -exists $DupeWindow`)
+    {
+        deleteUI $DupeWindow;
+    }
+
+    $DupeWindow = `window -height 300 -title "Duplicator" -sizeable 1 -width 400 $DupeWindow`;
+    string $baseLayout = `columnLayout -adjustableColumn 1 -parent $DupeWindow`;
+    string $xLayout = `rowLayout -numberOfColumns 4 -parent $baseLayout`;
+    string $yLayout = `rowLayout -numberOfColumns 4 -parent $baseLayout`;
+    string $zLayout = `rowLayout -numberOfColumns 4 -parent $baseLayout`;
+    string $buttonValLayout = `rowLayout -numberOfColumns 3 -adjustableColumn 3 -parent $baseLayout`;
+
+    textField -parent $xLayout -editable 0 -text "X minimum";
+    optionVar -stringValue "xMinimum" `textField -parent $xLayout`;
+    textField -parent $xLayout -editable 0 -text "X maximum";
+    optionVar -stringValue "xMaximum" `textField -parent $xLayout`;
+
+    textField -parent $yLayout -editable 0 -text "Y minimum";
+    optionVar -stringValue "yMinimum" `textField -parent $yLayout`;
+    textField -parent $yLayout -editable 0 -text "y maximum";
+    optionVar -stringValue "yMaximum" `textField -parent $yLayout`;
+
+    textField -parent $zLayout -editable 0 -text "Z minimum";
+    optionVar -stringValue "zMinimum" `textField -parent $zLayout`;
+    textField -parent $zLayout -editable 0 -text "X maximum";
+    optionVar -stringValue "zMaximum" `textField -parent $zLayout`;
+
+    textField -parent $buttonValLayout -editable 0 -text "run amount";
+    optionVar -stringValue "runAmount" `textField -parent $buttonValLayout`;
+    button -parent $buttonValLayout -label "Duplicate" -command "RunDuplication()";
+
+    showWindow $DupeWindow;
+}
+
+global proc float GetFloatValue(string $name)
+{
+    string $field = `optionVar -q $name`;
+    string $value = `textField -q -text $field`;
+    return (float)$value;
+}
+
+global proc float GetIntValue(string $name)
+{
+    string $field = `optionVar -q $name`;
+    string $value = `textField -q -text $field`;
+    return (int)$value;
+}
+
+global proc RunDuplication()
+{
+    $xMin = GetFloatValue("xMinimum");
+    $xMax = GetFloatValue("xMaximum");
+    $yMin = GetFloatValue("yMinimum");
+    $yMax = GetFloatValue("yMaximum");
+    $zMin = GetFloatValue("zMinimum");
+    $zMax = GetFloatValue("zMaximum");
+    Generate(GetIntValue("runAmount"));
+}
+
+    //$xMax = 5;
+    //$xMin = -5;
+    //$yMax = 5;
+    //$yMin = -5;
+    //$zMax = 5;
+    //$zMin = -5;
+
+
+GenerateWindow();
