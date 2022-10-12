@@ -1,19 +1,20 @@
-global proc Generate(int $runAmount)
+global proc Generate(int $runAmount, float $xMax, float $xMin, float $yMax, float $yMin, float $zMax, float $zMin)
 {
     string $objects[];
     string $objName[];
-    global float $xMax, $xMin, $xVal, $yMax, $yMin, $yVal, $zMax, $zMin, $zVal;
+    float $xVal, $yVal, $zVal;
+    int $j;
 
     $objects = `ls -selection`;
     for($i = 0; $i < $runAmount; $i++)
     {
-        for($i = 0; $i < size($objects); $i++)
+        for($j = 0; $j < size($objects); $j++)
         {
             $xVal = `rand $xMin $xMax`;
             $yVal = `rand $yMin $yMax`;
             $zVal = `rand $zMin $zMax`;
 
-            $objName = `duplicate $objects[$i]`;
+            $objName = `duplicate $objects[$j]`;
             move $xVal $yVal $zVal $objName[0];
         }
     }
@@ -35,58 +36,37 @@ global proc GenerateWindow()
     string $buttonValLayout = `rowLayout -numberOfColumns 3 -adjustableColumn 3 -parent $baseLayout`;
 
     textField -parent $xLayout -editable 0 -text "X minimum";
-    optionVar -stringValue "xMinimum" `textField -parent $xLayout`;
+    optionVar -stringValue "xMinimum" `floatField -parent $xLayout`;
     textField -parent $xLayout -editable 0 -text "X maximum";
-    optionVar -stringValue "xMaximum" `textField -parent $xLayout`;
+    optionVar -stringValue "xMaximum" `floatField -parent $xLayout`;
 
     textField -parent $yLayout -editable 0 -text "Y minimum";
-    optionVar -stringValue "yMinimum" `textField -parent $yLayout`;
-    textField -parent $yLayout -editable 0 -text "y maximum";
-    optionVar -stringValue "yMaximum" `textField -parent $yLayout`;
+    optionVar -stringValue "yMinimum" `floatField -parent $yLayout`;
+    textField -parent $yLayout -editable 0 -text "Y maximum";
+    optionVar -stringValue "yMaximum" `floatField -parent $yLayout`;
 
     textField -parent $zLayout -editable 0 -text "Z minimum";
-    optionVar -stringValue "zMinimum" `textField -parent $zLayout`;
+    optionVar -stringValue "zMinimum" `floatField -parent $zLayout`;
     textField -parent $zLayout -editable 0 -text "X maximum";
-    optionVar -stringValue "zMaximum" `textField -parent $zLayout`;
+    optionVar -stringValue "zMaximum" `floatField -parent $zLayout`;
 
     textField -parent $buttonValLayout -editable 0 -text "run amount";
-    optionVar -stringValue "runAmount" `textField -parent $buttonValLayout`;
+    optionVar -stringValue "runAmount" `floatField -parent $buttonValLayout`;
     button -parent $buttonValLayout -label "Duplicate" -command "RunDuplication()";
 
     showWindow $DupeWindow;
 }
 
-global proc float GetFloatValue(string $name)
+global proc float GetValue(string $name)
 {
     string $field = `optionVar -q $name`;
-    string $value = `textField -q -text $field`;
-    return (float)$value;
-}
-
-global proc float GetIntValue(string $name)
-{
-    string $field = `optionVar -q $name`;
-    string $value = `textField -q -text $field`;
-    return (int)$value;
+    string $value = `floatField -q -value $field`;
+    return $value;
 }
 
 global proc RunDuplication()
 {
-    $xMin = GetFloatValue("xMinimum");
-    $xMax = GetFloatValue("xMaximum");
-    $yMin = GetFloatValue("yMinimum");
-    $yMax = GetFloatValue("yMaximum");
-    $zMin = GetFloatValue("zMinimum");
-    $zMax = GetFloatValue("zMaximum");
-    Generate(GetIntValue("runAmount"));
+    Generate(GetValue("runAmount"), GetValue("xMaximum"), GetValue("xMinimum"), GetValue("yMaximum"), GetValue("yMinimum"), GetValue("zMaximum"), GetValue("zMinimum"));
 }
-
-    //$xMax = 5;
-    //$xMin = -5;
-    //$yMax = 5;
-    //$yMin = -5;
-    //$zMax = 5;
-    //$zMin = -5;
-
 
 GenerateWindow();
