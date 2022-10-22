@@ -6,7 +6,7 @@ global proc Generate(int $runAmount, float $xMax, float $xMin, float $yMax, floa
     int $j;
 
     $objects = `ls -selection`;
-    for($i = 0; $i < $runAmount; $i++)
+    for($j = 0; $j < $runAmount; $j++)
     {
         for($j = 0; $j < size($objects); $j++)
         {
@@ -41,9 +41,15 @@ global proc GenerateWindow()
     optionVar -stringValue "xMaximum" `floatField -parent $xLayout`;
 
     textField -parent $yLayout -editable 0 -text "Y minimum";
+<<<<<<< Updated upstream
     optionVar -stringValue "yMinimum" `floatField -parent $yLayout`;
     textField -parent $yLayout -editable 0 -text "Y maximum";
     optionVar -stringValue "yMaximum" `floatField -parent $yLayout`;
+=======
+    optionVar -stringValue "yMinimum" `textField -parent $yLayout`;
+    textField -parent $yLayout -editable 0 -text "Y maximum";
+    optionVar -stringValue "yMaximum" `textField -parent $yLayout`;
+>>>>>>> Stashed changes
 
     textField -parent $zLayout -editable 0 -text "Z minimum";
     optionVar -stringValue "zMinimum" `floatField -parent $zLayout`;

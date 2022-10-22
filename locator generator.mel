@@ -1,0 +1,17 @@
+proc GenerateLocator()
+{
+string $objects[];
+$objects = `ls -selection`;
+
+string $leCluster[] = `cluster $objects`;
+
+float $pos[] = `xform -q -ws -rp $leCluster[1]`;
+
+string $leLocator[] = `spaceLocator`;
+
+matchTransform $leLocator $leCluster;
+
+delete $leCluster;
+}
+
+GenerateLocator();
