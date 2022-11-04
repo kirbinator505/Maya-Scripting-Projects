@@ -1,0 +1,25 @@
+global proc ControlGenerate()
+{
+    string $selection[] = `ls -sl`;
+    string $nurb[] = `circle -nr 0 1 0 -n ($selection[0] + "_ctrl")`;
+    string $grp = `group -n ($selection[0] + "_ctrl_grp")`;
+    
+    matchTransform $grp $selection[0];
+}
+
+global proc GenerateWindow()
+{
+    string $window = "Control_Generator";
+    if(`window -exists $window`)
+    {
+        deleteUI $window;
+    }
+
+    $window = `window -height 50 -title "Control Generator" -sizeable 1 -width 400 $window`;
+    string $baseLayout = `columnLayout -adjustableColumn 1 -parent $window`;
+    button -parent $baseLayout -label "Generate" -command "ControlGenerate()";
+
+    showWindow $window;
+}
+
+GenerateWindow();
