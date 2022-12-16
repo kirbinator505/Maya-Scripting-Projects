@@ -1,5 +1,4 @@
 import maya.cmds as cmds
-colorNum = 0
 def SetColor (num):
     selectionList = cmds.ls(sl=True)
     #make stuff below work with iterables
