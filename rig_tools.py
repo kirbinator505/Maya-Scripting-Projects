@@ -74,5 +74,3 @@ def Create_Group(obj):
 
     cmds.select(obj, r=True)
     return [obj, grp]
-
-Create_Controlls()

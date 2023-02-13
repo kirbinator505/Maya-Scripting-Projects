@@ -1,8 +1,8 @@
 global proc ControlGenerate()
 {
     string $selection[] = `ls -sl`;
-    string $nurb[] = `circle -nr 0 1 0 -n ($selection[0] + "_ctrl")`;
-    string $grp = `group -n ($selection[0] + "_ctrl_grp")`;
+    string $nurb[] = `circle -nr 0 1 0 -n ($selection[0] + "_Ctrl")`;
+    string $grp = `group -n ($selection[0] + "_Ctrl_Grp")`;
     
     matchTransform $grp $selection[0];
 }
