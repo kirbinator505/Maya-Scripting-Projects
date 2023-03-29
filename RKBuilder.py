@@ -1,10 +1,8 @@
 import maya.cmds as cmds
 
-#selection = cmds.ls(sl=True)
-#newAttr = cmds.addAttr(ln="testattr")
-FKConstrainer = [0]
-IKConstrainer = [0]
-RKConstrained = [0]
+FKConstrainer = []
+IKConstrainer = []
+RKConstrained = []
 Control = 0
 FKConstraint = []
 IKConstraint = []
@@ -83,6 +81,34 @@ def makeRK():
     addAttribute()
     linkAttributes()
 
+def Clear():
+    global FKConstrainer
+    global IKConstrainer
+    global RKConstrained
+    global Control
+    global FKConstraint
+    global IKConstraint
+    global RevNode
+    global AttrTarget
+    FKConstrainer = []
+    IKConstrainer = []
+    RKConstrained = []
+    Control = 0
+    FKConstraint = []
+    IKConstraint = []
+    RevNode = 0
+    AttrTarget = 0
+    cmds.textField('FK_Constraint', edit=True, ip=1, tx="")
+    cmds.textField('FK_Constraint', edit=True, ip=1, pht="Select FK Constrainer")
+    cmds.textField('IK_Constraint', edit=True, ip=1, tx="")
+    cmds.textField('IK_Constraint', edit=True, ip=1, pht="Select IK Constrainer")
+    cmds.textField('RK_Constraint', edit=True, ip=1, tx="")
+    cmds.textField('RK_Constraint', edit=True, ip=1, pht="Select RK Constrainer")
+    cmds.textField('Control_Field', edit=True, ip=1, tx="")
+    cmds.textField('Control_Field', edit=True, ip=1, pht="Select Control for Attribute")
+    cmds.textField('Attribute_Name', edit=True, ip=1, tx="")
+    cmds.textField('Attribute_Name', edit=True, ip=1, pht="Name of Attribute")
+
 #UI
 def GenerateWindow():
     RKBuilderWindow = "RK_Builder"
@@ -105,7 +131,9 @@ def GenerateWindow():
     FlowLayout5 = cmds.flowLayout("Flow_Layout5", p=ColumnLayout, wr=True)
     cmds.textField('Attribute_Name', w=300, p=FlowLayout5, editable=True, ip=1, pht="Name of Attribute")
     FlowLayout6 = cmds.flowLayout("Flow_Layout6", p=ColumnLayout, wr=True)
-    cmds.button("Set_Ctrl_Attr", l="Make RK", p=FlowLayout6, c='makeRK()')
+    cmds.button("Make_RK", l="Make RK", p=FlowLayout6, c='makeRK()')
+    FlowLayout7 = cmds.flowLayout("Flow_Layout7", p=ColumnLayout, wr=True)
+    cmds.button("Clear_Bttn", l="Clear", p=FlowLayout7, c='Clear()')
 
     cmds.showWindow(RKBuilderWindow)
 GenerateWindow()
