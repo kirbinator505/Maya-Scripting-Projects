@@ -40,6 +40,7 @@ def nameConcat(objs):
 def makeConstraints():
     global FKConstraint
     global IKConstraint
+    global RKConstrained
     f=0
     i=0
     for obj in FKConstrainer:
