@@ -10,8 +10,8 @@ Control = 0
 AttrTarget = 0
 FTTarget = 0
 FRTarget = 0
-TransMD = 0
-RotMD = 0
+TransMD = []
+RotMD = []
 
 def setConstrainers(fieldName):
     #set the constrainers into a list
@@ -52,8 +52,10 @@ def makeConstraints():
 def makeMultiplyNodes():
     global TransMD
     global RotMD
-    TransMD = cmds.shadingNode('multiplyDivide', n='%s_Translate_MD' % Control[0], au=True)
-    RotMD = cmds.shadingNode('multiplyDivide', n='%s_Rotate_MD' % Control[0], au=True)
+
+    for Con in Constrainers:
+        TransMD.append(cmds.shadingNode('multiplyDivide', n='%s_Translate_MD' % Con, au=True))
+        RotMD.append(cmds.shadingNode('multiplyDivide', n='%s_Rotate_MD' % Con, au=True))
 
 def makeAttr():
     #enum attr
@@ -78,29 +80,14 @@ def makeAttr():
         cmds.setAttr(FRTarget, e=True, keyable=True)
 
 def LinkNodes():
-    #connect constraint to MD
-    cmds.connectAttr("%s.constraintTranslate" % TConstraints[0][0], "%s.input1" % TransMD, f=True)
-    cmds.connectAttr("%s.constraintRotate" % RConstraints[0][0], "%s.input1" % RotMD, f=True)
+    i=0
 
-    #connect Ctrl Attribute to MD
-    cmds.connectAttr(FTTarget, "%s.input2X" % TransMD, f=True)
-    cmds.connectAttr(FTTarget, "%s.input2Y" % TransMD, f=True)
-    cmds.connectAttr(FTTarget, "%s.input2Z" % TransMD, f=True)
-    cmds.connectAttr(FRTarget, "%s.input2X" % RotMD, f=True)
-    cmds.connectAttr(FRTarget, "%s.input2Y" % RotMD, f=True)
-    cmds.connectAttr(FRTarget, "%s.input2Z" % RotMD, f=True)
-
-    #connect MD to Constrained
-    cmds.connectAttr("%s.output" %TransMD, "%s.translate" % Constrained[0], f=True)
-    cmds.connectAttr("%s.output" % RotMD, "%s.rotate" % Constrained[0], f=True)
-
-    #disconnect constraint from Constrained
-    cmds.disconnectAttr("%s.constraintTranslateX" % TConstraints[0][0], "%s.translateX" % Constrained[0])
-    cmds.disconnectAttr("%s.constraintTranslateY" % TConstraints[0][0], "%s.translateY" % Constrained[0])
-    cmds.disconnectAttr("%s.constraintTranslateZ" % TConstraints[0][0], "%s.translateZ" % Constrained[0])
-    cmds.disconnectAttr("%s.constraintRotateX" % RConstraints[0][0], "%s.rotateX" % Constrained[0])
-    cmds.disconnectAttr("%s.constraintRotateY" % RConstraints[0][0], "%s.rotateY" % Constrained[0])
-    cmds.disconnectAttr("%s.constraintRotateZ" % RConstraints[0][0], "%s.rotateZ" % Constrained[0])
+    for con in Constrainers:
+        cmds.connectAttr('%s.output.outputX' % TransMD[i], str(TConstraints[0][0]) + "." + str(Constrainers[i]) + "W" + str(i), f=True)
+        cmds.connectAttr('%s.output.outputX' % RotMD[i], str(RConstraints[0][0]) + "." + str(Constrainers[i]) + "W" + str(i), f=True)
+        cmds.connectAttr(FTTarget, '%s.input2.input2X' % TransMD[i], f=True)
+        cmds.connectAttr(FRTarget, '%s.input2.input2X' % RotMD[i], f=True)
+        i+=1
 
 def linkAttributes():
     global AttrTarget
@@ -115,28 +102,28 @@ def linkAttributes():
         s=0
         cmds.setAttr(AttrTarget, i)
 
-        tActive = str(TConstraints[0][0]) + "." + str(Constrainers[i]) + "W" + str(i)
-        rActive = str(RConstraints[0][0]) + "." + str(Constrainers[i]) + "W" + str(i)
+        tActive = '%s.output.outputX' % TransMD[i]
+        rActive = '%s.output.outputX' % RotMD[i]
         sActive = str(SConstraints[i][0]) + "." + str(Constrainers[i]) + "W" + str(i)
 
         #making driven keyframes for Translate constraints
         for const in Constrainers:
             #check if const is the active constraint, if yes, set to 1, if no, set to 0
-            if str(TConstraints[0][0]) + "." + str(Constrainers[t]) + "W" + str(t) == tActive:
-                cmds.setAttr(str(TConstraints[0][0]) + "." + str(Constrainers[t]) + "W" + str(t), 1)
+            if '%s.output.outputX' % TransMD[t] == tActive:
+                cmds.setAttr('%s.input1.input1X' % TransMD[t], 1)
             else:
-                cmds.setAttr(str(TConstraints[0][0]) + "." + str(Constrainers[t]) + "W" + str(t), 0)
-            cmds.setDrivenKeyframe(str(TConstraints[0][0]) + "." + str(Constrainers[t]) + "W" + str(t), cd=AttrTarget, itt="linear", ott="linear")
+                cmds.setAttr('%s.input1.input1X' % TransMD[t], 0)
+            cmds.setDrivenKeyframe('%s.input1.input1X' % TransMD[t], cd=AttrTarget, itt="linear", ott="linear")
             t+=1
 
         # making driven keyframes for Translate constraints
         for const in Constrainers:
             # check if const is the active constraint, if yes, set to 1, if no, set to 0
-            if str(RConstraints[0][0]) + "." + str(Constrainers[r]) + "W" + str(r) == rActive:
-                cmds.setAttr(str(RConstraints[0][0]) + "." + str(Constrainers[r]) + "W" + str(r), 1)
+            if '%s.output.outputX' % RotMD[r] == rActive:
+                cmds.setAttr('%s.input1.input1X' % RotMD[r], 1)
             else:
-                cmds.setAttr(str(RConstraints[0][0]) + "." + str(Constrainers[r]) + "W" + str(r), 0)
-            cmds.setDrivenKeyframe(str(RConstraints[0][0]) + "." + str(Constrainers[r]) + "W" + str(r), cd=AttrTarget, itt="linear", ott="linear")
+                cmds.setAttr('%s.input1.input1X' % RotMD[r], 0)
+            cmds.setDrivenKeyframe('%s.input1.input1X' % RotMD[r], cd=AttrTarget, itt="linear", ott="linear")
             r += 1
 
         #making driven keyframes for scale constraints
