@@ -1,12 +1,17 @@
 import maya.cmds as cmds
 
 Constrainers = []
-PConstraints = []
+TConstraints = []
+RConstraints = []
 SConstraints = []
 Names = 0
 Constrained = 0
 Control = 0
 AttrTarget = 0
+FTTarget = 0
+FRTarget = 0
+TransMD = 0
+RotMD = 0
 
 def setConstrainers(fieldName):
     #set the constrainers into a list
@@ -30,46 +35,109 @@ def setControl(fieldName):
     cmds.textField(fieldName, edit=True, ip=1, tx=nameConcat(Control))
 
 def makeConstraints():
-    global PConstraints
+    global TConstraints
+    global RConstraints
     global SConstraints
     global Constrained
     #                           !!!default weights for constraints is 0!!!
-    for obj in Constrainers:
-        PConstraints.append(cmds.parentConstraint(obj, Constrained, maintainOffset=True, w=0))
+    #for obj in Constrainers:
+    TConstraints.append(cmds.parentConstraint(Constrainers, Constrained, maintainOffset=True, name="%sTranslateConstraint" % Control[0], skipRotate=['x','y','z'], w=0))
+
+    #for obj in Constrainers:
+    RConstraints.append(cmds.parentConstraint(Constrainers, Constrained, maintainOffset=True, name="%sRotateConstraint" % Control[0],skipTranslate=['x', 'y', 'z'], w=0))
 
     for obj in Constrainers:
         SConstraints.append(cmds.scaleConstraint(obj, Constrained, maintainOffset=True, w=0))
 
+def makeMultiplyNodes():
+    global TransMD
+    global RotMD
+    TransMD = cmds.shadingNode('multiplyDivide', n='%s_Translate_MD' % Control[0], au=True)
+    RotMD = cmds.shadingNode('multiplyDivide', n='%s_Rotate_MD' % Control[0], au=True)
+
 def makeAttr():
+    #enum attr
     cmds.addAttr(Control, ln=cmds.textField('Attribute_Name', query=True, tx=True), at='enum', en=cmds.textField('Constrainer_Names', query=True, tx=True))
     editTarget = Control[0] + "." + cmds.textField('Attribute_Name', query=True, tx=True)
     cmds.setAttr(editTarget, edit=True, keyable=True)
     global AttrTarget
     AttrTarget = editTarget
 
+    #follow Translate attr
+    global FTTarget
+    if not cmds.attributeQuery('FollowTranslate', node=Control[0], exists=True):
+        cmds.addAttr(Control, ln='FollowTranslate', at='double', min=0, max=1, dv=1)
+        FTTarget = '%s.FollowTranslate' % (Control[0])
+        cmds.setAttr(FTTarget, e=True, keyable=True)
+
+    # follow Rotate attr
+    global FRTarget
+    if not cmds.attributeQuery('FollowRotate', node=Control[0], exists=True):
+        cmds.addAttr(Control, ln='FollowRotate', at='double', min=0, max=1, dv=1)
+        FRTarget = '%s.FollowRotate' % (Control[0])
+        cmds.setAttr(FRTarget, e=True, keyable=True)
+
+def LinkNodes():
+    #connect constraint to MD
+    cmds.connectAttr("%s.constraintTranslate" % TConstraints[0][0], "%s.input1" % TransMD, f=True)
+    cmds.connectAttr("%s.constraintRotate" % RConstraints[0][0], "%s.input1" % RotMD, f=True)
+
+    #connect Ctrl Attribute to MD
+    cmds.connectAttr(FTTarget, "%s.input2X" % TransMD, f=True)
+    cmds.connectAttr(FTTarget, "%s.input2Y" % TransMD, f=True)
+    cmds.connectAttr(FTTarget, "%s.input2Z" % TransMD, f=True)
+    cmds.connectAttr(FRTarget, "%s.input2X" % RotMD, f=True)
+    cmds.connectAttr(FRTarget, "%s.input2Y" % RotMD, f=True)
+    cmds.connectAttr(FRTarget, "%s.input2Z" % RotMD, f=True)
+
+    #connect MD to Constrained
+    cmds.connectAttr("%s.output" %TransMD, "%s.translate" % Constrained[0], f=True)
+    cmds.connectAttr("%s.output" % RotMD, "%s.rotate" % Constrained[0], f=True)
+
+    #disconnect constraint from Constrained
+    cmds.disconnectAttr("%s.constraintTranslateX" % TConstraints[0][0], "%s.translateX" % Constrained[0])
+    cmds.disconnectAttr("%s.constraintTranslateY" % TConstraints[0][0], "%s.translateY" % Constrained[0])
+    cmds.disconnectAttr("%s.constraintTranslateZ" % TConstraints[0][0], "%s.translateZ" % Constrained[0])
+    cmds.disconnectAttr("%s.constraintRotateX" % RConstraints[0][0], "%s.rotateX" % Constrained[0])
+    cmds.disconnectAttr("%s.constraintRotateY" % RConstraints[0][0], "%s.rotateY" % Constrained[0])
+    cmds.disconnectAttr("%s.constraintRotateZ" % RConstraints[0][0], "%s.rotateZ" % Constrained[0])
+
 def linkAttributes():
     global AttrTarget
     global SConstraints
-    global PConstraints
+    global TConstraints
+    global RConstraints
     i = 0
     #for every constrainer, run the code that flips through each attribute and links it to that constraint weight
     for trgt in Constrainers:
-        p=0
+        t=0
+        r=0
         s=0
         cmds.setAttr(AttrTarget, i)
 
-        pActive = str(PConstraints[i][0]) + "." + str(Constrainers[i]) + "W" + str(i)
+        tActive = str(TConstraints[0][0]) + "." + str(Constrainers[i]) + "W" + str(i)
+        rActive = str(RConstraints[0][0]) + "." + str(Constrainers[i]) + "W" + str(i)
         sActive = str(SConstraints[i][0]) + "." + str(Constrainers[i]) + "W" + str(i)
 
-        #making driven keyframes for parent constraints
-        for const in PConstraints:
+        #making driven keyframes for Translate constraints
+        for const in Constrainers:
             #check if const is the active constraint, if yes, set to 1, if no, set to 0
-            if str(const[0]) + "." + str(Constrainers[p]) + "W" + str(p) == pActive:
-                cmds.setAttr(str(const[0]) + "." + str(Constrainers[p]) + "W" + str(p), 1)
+            if str(TConstraints[0][0]) + "." + str(Constrainers[t]) + "W" + str(t) == tActive:
+                cmds.setAttr(str(TConstraints[0][0]) + "." + str(Constrainers[t]) + "W" + str(t), 1)
             else:
-                cmds.setAttr(str(const[0]) + "." + str(Constrainers[p]) + "W" + str(p), 0)
-            cmds.setDrivenKeyframe(str(const[0]) + "." + str(Constrainers[p]) + "W" + str(p), cd=AttrTarget, itt="linear", ott="linear")
-            p+=1
+                cmds.setAttr(str(TConstraints[0][0]) + "." + str(Constrainers[t]) + "W" + str(t), 0)
+            cmds.setDrivenKeyframe(str(TConstraints[0][0]) + "." + str(Constrainers[t]) + "W" + str(t), cd=AttrTarget, itt="linear", ott="linear")
+            t+=1
+
+        # making driven keyframes for Translate constraints
+        for const in Constrainers:
+            # check if const is the active constraint, if yes, set to 1, if no, set to 0
+            if str(RConstraints[0][0]) + "." + str(Constrainers[r]) + "W" + str(r) == rActive:
+                cmds.setAttr(str(RConstraints[0][0]) + "." + str(Constrainers[r]) + "W" + str(r), 1)
+            else:
+                cmds.setAttr(str(RConstraints[0][0]) + "." + str(Constrainers[r]) + "W" + str(r), 0)
+            cmds.setDrivenKeyframe(str(RConstraints[0][0]) + "." + str(Constrainers[r]) + "W" + str(r), cd=AttrTarget, itt="linear", ott="linear")
+            r += 1
 
         #making driven keyframes for scale constraints
         for const in SConstraints:
@@ -86,6 +154,8 @@ def linkAttributes():
 def makeFollow():
     makeConstraints()
     makeAttr()
+    makeMultiplyNodes()
+    LinkNodes()
     linkAttributes()
     cmds.setAttr(AttrTarget, 0)
 
@@ -99,14 +169,16 @@ def nameConcat(objs):
 
 def Clear():
     global Constrainers
-    global PConstraints
+    global TConstraints
+    global RConstraints
     global SConstraints
     global Control
     global Names
     global Constrained
     global AttrTarget
     Constrainers = []
-    PConstraints = []
+    TConstraints = []
+    RConstraints = []
     SConstraints = []
     Names = []
     Constrained = 0
