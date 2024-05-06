@@ -139,6 +139,7 @@ def linkAttributes():
         i+=1
 
 def makeFollow():
+    global AttrTarget
     makeConstraints()
     makeAttr()
     makeMultiplyNodes()
@@ -163,6 +164,14 @@ def Clear():
     global Names
     global Constrained
     global AttrTarget
+    global FTTarget
+    global FRTarget
+    global TransMD
+    global RotMD
+    FTTarget = 0
+    FRTarget = 0
+    TransMD = []
+    RotMD = []
     Constrainers = []
     TConstraints = []
     RConstraints = []
